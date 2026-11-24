@@ -79,3 +79,18 @@ window.SLIDES = [
   { id: "09", title: "ฟังก์ชัน", en: "Functions", pages: 19, weeks: "สัปดาห์ 10–11" },
   { id: "10", title: "NumPy", en: "Numerical Computing", pages: 21, weeks: "สัปดาห์ 12–13" }
 ];
+
+// เอกสารประกอบการสอน: PDF อยู่ที่ docs/docXX.pdf และภาพแต่ละหน้าที่ docs/docXX/p-01.jpg ...
+// slide = รหัสบทของสไลด์ที่คู่กัน
+window.DOCS = [
+  { id: "01", title: "แนะนำคอมพิวเตอร์ ภาษา Python และ Google Colab", en: "Introduction to Computers, Python and Google Colab", pages: 16, weeks: "สัปดาห์ 1", slide: "01" },
+  { id: "02", title: "ตัวแปร การรับและการแสดงผลข้อมูล", en: "Variables, Input and Output", pages: 25, weeks: "สัปดาห์ 2", slide: "02" },
+  { id: "03", title: "การใช้ไลบรารีสำเร็จรูป", en: "Libraries", pages: 20, weeks: "สัปดาห์ 3", slide: "03" },
+  { id: "04", title: "โครงสร้างการตัดสินใจ", en: "Conditional Structure", pages: 19, weeks: "สัปดาห์ 4–5", slide: "04" },
+  { id: "05", title: "โครงสร้างการทำซ้ำ For Loops", en: "Repetition Structure: For Loops", pages: 19, weeks: "สัปดาห์ 6", slide: "05" },
+  { id: "06", title: "โครงสร้างข้อมูลแบบลิสต์", en: "Lists", pages: 14, weeks: "สัปดาห์ 7", slide: "06" },
+  { id: "07", title: "โครงสร้างการทำซ้ำ While Loops", en: "While Loops", pages: 16, weeks: "สัปดาห์ 8", slide: "07" },
+  { id: "08", title: "ดิกชันนารีและเซต", en: "Dictionaries and Sets", pages: 14, weeks: "สัปดาห์ 9", slide: "08" },
+  { id: "09", title: "ฟังก์ชัน", en: "Functions", pages: 15, weeks: "สัปดาห์ 10–11", slide: "09" },
+  { id: "10", title: "การคำนวณเชิงตัวเลขด้วย NumPy", en: "Numerical Computing with NumPy", pages: 15, weeks: "สัปดาห์ 12–13", slide: "10" }
+];

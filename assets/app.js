@@ -1,11 +1,15 @@
 (function () {
-  const C = window.COURSE, S = window.SLIDES;
+  const C = window.COURSE, S = window.SLIDES, D = window.DOCS || [];
+  const docById = (id) => D.find((d) => d.id === id);
+  const docSrc = (id, p) => `docs/doc${id}/p-${pad(p)}.jpg`;
   const app = document.getElementById("app");
   const pad = (n) => String(n).padStart(2, "0");
   const slideById = (id) => S.find((s) => s.id === id);
   const pageSrc = (id, p) => `slides/ch${id}/p-${pad(p)}.jpg`;
   const seg = (cls = "") => `<div class="seg-bar ${cls}" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>`;
   const icon = {
+    doc: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M8 13h8M8 17h5"/></svg>',
+    ext: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg>',
     slides: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M12 16v4M8 20h8"/></svg>',
     dl: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg>',
     full: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>',
@@ -62,8 +66,14 @@ Z = np.sin(X) * np.cos(Y)   <span class="c"># z = sin x · cos y</span>
           <p>อ่านสไลด์รายบทบนเว็บได้ทันที ทั้งบนคอมพิวเตอร์และมือถือ หรือดาวน์โหลดเป็น PDF</p>
           <span class="go">เปิดดู →</span>
         </a>
-        <div class="hcard soon">
+        <a class="hcard" href="#docs">
           <span class="hnum">03</span>
+          <h3>เอกสารประกอบการสอน</h3>
+          <p>เนื้อหาละเอียดรายบท พร้อมตัวอย่างโค้ดและคำอธิบาย อ่านบนเว็บหรือดาวน์โหลด PDF</p>
+          <span class="go">เปิดดู →</span>
+        </a>
+        <div class="hcard soon">
+          <span class="hnum">04</span>
           <h3>แบบฝึกหัดบน Colab</h3>
           <p>ฝึกเขียนโปรแกรมจริงผ่าน Google Colab — กดเปิดแล้วเริ่มเขียนได้เลย ไม่ต้องติดตั้งโปรแกรม</p>
           <span class="go">เร็ว ๆ นี้</span>
@@ -91,7 +101,10 @@ Z = np.sin(X) * np.cos(Y)   <span class="c"># z = sin x · cos y</span>
       if (w.exam) return `<div class="exam">${w.exam}</div>`;
       const links = w.ch.map((id) => {
         const s = slideById(id);
-        return s ? `<a class="chip" href="#slides/${id}">${icon.slides}บทที่ ${parseInt(id, 10)}</a>` : "";
+        return s ? `<a class="chip" href="#slides/${id}" title="สไลด์บทที่ ${parseInt(id, 10)}">${icon.slides}สไลด์ ${parseInt(id, 10)}</a>` : "";
+      }).join("") + w.ch.map((id) => {
+        const d = docById(id);
+        return d ? `<a class="chip" href="#docs/${id}" title="เอกสารประกอบการสอนบทที่ ${parseInt(id, 10)}">${icon.doc}เอกสาร ${parseInt(id, 10)}</a>` : "";
       }).join("");
       return `
         <div class="wk">
@@ -151,7 +164,7 @@ Z = np.sin(X) * np.cos(Y)   <span class="c"># z = sin x · cos y</span>
         </section>
 
         <section class="section" id="schedule">
-          ${head(3, "หัวข้อการสอนรายสัปดาห์", "กดที่ป้ายบทเพื่อเปิดสไลด์")}
+          ${head(3, "หัวข้อการสอนรายสัปดาห์", "กดที่ป้ายเพื่อเปิดสไลด์หรือเอกสารของบทนั้น")}
           <div class="schedule">${weeks}</div>
         </section>
 
@@ -302,11 +315,136 @@ Z = np.sin(X) * np.cos(Y)   <span class="c"># z = sin x · cos y</span>
     else if (e.key === "End") viewer.show(viewer.s.pages);
   });
 
+
+  /* ---------------- เอกสารประกอบการสอน ---------------- */
+  function renderDocList() {
+    const total = D.reduce((a, d) => a + d.pages, 0);
+    const cards = D.map((d) => `
+      <a class="doccard" href="#docs/${d.id}">
+        <div class="dthumb"><img src="docs/doc${d.id}/thumb.jpg" alt="หน้าแรกเอกสารบทที่ ${parseInt(d.id, 10)}" loading="lazy"></div>
+        <div class="body">
+          <div class="ch">บทที่ ${parseInt(d.id, 10)}</div>
+          <div class="tt">${d.title}</div>
+          <div class="en">${d.en}</div>
+          <div class="foot"><span>${d.weeks}</span><span>${d.pages} หน้า · PDF</span></div>
+        </div>
+      </a>`).join("");
+    app.innerHTML = `
+      <div class="page">
+        <section class="hero">
+          <div class="eyebrow"><b>เอกสารประกอบการสอน</b> · ${C.code} · ${C.term}</div>
+          <h1>เอกสารประกอบการสอนรายบท</h1>
+          <p class="en">${D.length} บท · ${total} หน้า — อ่านเนื้อหาละเอียดพร้อมตัวอย่างโค้ดบนเว็บ หรือดาวน์โหลดเป็น PDF</p>
+          ${seg()}
+        </section>
+        <div class="doc-grid">${cards}</div>
+      </div>`;
+  }
+
+  let reader = null;
+  function renderDocReader(id, page) {
+    const d = docById(id);
+    if (!d) return renderDocList();
+    const idx = D.indexOf(d), prev = D[idx - 1], next = D[idx + 1];
+    const slide = d.slide && slideById(d.slide);
+    const sheets = Array.from({ length: d.pages }, (_, i) => `
+      <div class="sheet" id="pg-${i + 1}" data-p="${i + 1}">
+        <img src="${docSrc(id, i + 1)}" alt="${d.title} หน้า ${i + 1}" loading="${i < 2 ? "eager" : "lazy"}" decoding="async">
+      </div>`).join("");
+
+    app.innerHTML = `
+      <div class="page reader">
+        <div class="viewer-top">
+          <div>
+            <a class="back" href="#docs">${icon.left} เอกสารทั้งหมด</a>
+            <div class="viewer-title"><div class="ch">เอกสารประกอบการสอน บทที่ ${parseInt(id, 10)} · ${d.weeks}</div><h1>${d.title}</h1></div>
+          </div>
+          <div class="btns">
+            ${slide ? `<a class="btn" href="#slides/${slide.id}">${icon.slides}สไลด์บทนี้</a>` : ""}
+            <a class="btn" href="docs/doc${id}.pdf" target="_blank" rel="noopener">${icon.ext}เปิด PDF</a>
+            <a class="btn primary" href="docs/doc${id}.pdf" download>${icon.dl}ดาวน์โหลด PDF</a>
+          </div>
+        </div>
+
+        <div class="rbar">
+          <div class="rbar-inner">
+            <button class="btn sm" type="button" id="rPrev" aria-label="หน้าก่อนหน้า">${icon.left}</button>
+            <label class="pgjump">หน้า <input id="rPage" type="number" min="1" max="${d.pages}" value="${page}" inputmode="numeric"> / ${d.pages}</label>
+            <button class="btn sm" type="button" id="rNext" aria-label="หน้าถัดไป">${icon.right}</button>
+            <span class="sp"></span>
+            <button class="btn sm" type="button" id="zOut" aria-label="ย่อ">−</button>
+            <span class="zoomv" id="zVal"></span>
+            <button class="btn sm" type="button" id="zIn" aria-label="ขยาย">+</button>
+          </div>
+          <div class="progress"><i id="rBar"></i></div>
+        </div>
+
+        <div class="sheets" id="sheets">${sheets}</div>
+
+        <nav class="pager">
+          ${prev ? `<a href="#docs/${prev.id}"><div class="lbl">← บทก่อนหน้า</div><div class="nm">บทที่ ${parseInt(prev.id, 10)} ${prev.title}</div></a>` : "<span></span>"}
+          ${next ? `<a class="r" href="#docs/${next.id}"><div class="lbl">บทถัดไป →</div><div class="nm">บทที่ ${parseInt(next.id, 10)} ${next.title}</div></a>` : "<span></span>"}
+        </nav>
+      </div>`;
+
+    const sheetsEl = document.getElementById("sheets");
+    const input = document.getElementById("rPage");
+    const ZOOMS = [60, 70, 80, 90, 100];
+    let zi = 4;
+    try { const z = +localStorage.getItem("docZoom"); if (ZOOMS.includes(z)) zi = ZOOMS.indexOf(z); } catch (e) {}
+    function applyZoom() {
+      sheetsEl.style.setProperty("--zoom", ZOOMS[zi] / 100);
+      document.getElementById("zVal").textContent = ZOOMS[zi] + "%";
+      try { localStorage.setItem("docZoom", ZOOMS[zi]); } catch (e) {}
+    }
+    applyZoom();
+
+    reader = { d, page };
+    function setCurrent(p) {
+      if (p === reader.page) return;
+      reader.page = p;
+      if (document.activeElement !== input) input.value = p;
+      document.getElementById("rBar").style.width = (p / d.pages * 100) + "%";
+      history.replaceState(null, "", `#docs/${id}/${p}`);
+    }
+    function go(p, smooth = true) {
+      p = Math.min(Math.max(1, p), d.pages);
+      const el = document.getElementById("pg-" + p);
+      const off = document.querySelector(".site-header").offsetHeight + document.querySelector(".rbar").offsetHeight + 12;
+      window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - off, behavior: smooth ? "smooth" : "auto" });
+      input.value = p; reader.page = p;
+      document.getElementById("rBar").style.width = (p / d.pages * 100) + "%";
+      history.replaceState(null, "", `#docs/${id}/${p}`);
+    }
+    reader.go = go;
+
+    // หน้าปัจจุบัน = หน้าที่กินพื้นที่จอมากที่สุด
+    const ratios = new Map();
+    const io = new IntersectionObserver((ents) => {
+      ents.forEach((e) => ratios.set(+e.target.dataset.p, e.intersectionRatio));
+      let best = reader.page, bv = -1;
+      ratios.forEach((v, k) => { if (v > bv) { bv = v; best = k; } });
+      if (bv > 0) setCurrent(best);
+    }, { threshold: [0, 0.1, 0.25, 0.5, 0.75, 1] });
+    sheetsEl.querySelectorAll(".sheet").forEach((s) => io.observe(s));
+    reader.io = io;
+
+    document.getElementById("rPrev").onclick = () => go(reader.page - 1);
+    document.getElementById("rNext").onclick = () => go(reader.page + 1);
+    input.onchange = () => go(+input.value || 1);
+    input.onkeydown = (e) => { if (e.key === "Enter") { e.preventDefault(); go(+input.value || 1); input.blur(); } };
+    document.getElementById("zIn").onclick = () => { if (zi < ZOOMS.length - 1) { const p = reader.page; zi++; applyZoom(); go(p, false); } };
+    document.getElementById("zOut").onclick = () => { if (zi > 0) { const p = reader.page; zi--; applyZoom(); go(p, false); } };
+
+    document.getElementById("rBar").style.width = (page / d.pages * 100) + "%";
+    if (page > 1) requestAnimationFrame(() => go(page, false));
+  }
+
   /* ---------------- router ---------------- */
   let lastRoute = "";
   function route() {
     const parts = (location.hash.replace(/^#\/?/, "") || "home").split("/");
-    const tab = ["slides", "plan"].includes(parts[0]) ? parts[0] : "home";
+    const tab = ["slides", "plan", "docs"].includes(parts[0]) ? parts[0] : "home";
     document.querySelectorAll(".tab").forEach((t) => {
       const on = t.dataset.tab === tab;
       t.classList.toggle("active", on);
@@ -315,8 +453,11 @@ Z = np.sin(X) * np.cos(Y)   <span class="c"># z = sin x · cos y</span>
 
     const key = parts.slice(0, 2).join("/");
     if (tab === "slides" && parts[1] && key === lastRoute && viewer) { viewer.show(+parts[2] || 1, false); return; }
+    if (tab === "docs" && parts[1] && key === lastRoute && reader) { reader.go(+parts[2] || 1); return; }
     lastRoute = key;
     viewer = null;
+    if (reader && reader.io) reader.io.disconnect();
+    reader = null;
     if (window.__heroUnmount) { window.__heroUnmount(); window.__heroUnmount = null; }
     window.__heroPending = null;
     app.className = tab === "home" ? "" : "wrap";
@@ -324,6 +465,13 @@ Z = np.sin(X) * np.cos(Y)   <span class="c"># z = sin x · cos y</span>
 
     if (tab === "home") { renderHome(); document.title = `${C.code} ${C.nameTh}`; }
     else if (tab === "plan") { renderPlan(); document.title = `แผนการสอน · ${C.code}`; }
+    else if (tab === "docs") {
+      const d = parts[1] && docById(parts[1]);
+      window.scrollTo(0, 0);
+      if (d) { renderDocReader(parts[1], +parts[2] || 1); document.title = `เอกสารบทที่ ${parseInt(d.id, 10)} ${d.title} · ${C.code}`; }
+      else { renderDocList(); document.title = `เอกสารประกอบการสอน · ${C.code}`; }
+      return;
+    }
     else if (parts[1]) { renderViewer(parts[1], +parts[2] || 1); const s = slideById(parts[1]); document.title = `${s ? "บทที่ " + parseInt(s.id, 10) + " " + s.title : "สไลด์"} · ${C.code}`; }
     else { renderSlideList(); document.title = `สไลด์ · ${C.code}`; }
     window.scrollTo(0, 0);

@@ -10,6 +10,8 @@ assets/style.css    รูปแบบ (โทน แดง-ดำ-เทา-ข
 assets/app.js       การทำงานของหน้าเว็บ
 slides/chXX.pdf     ไฟล์ PDF ของแต่ละบท
 slides/chXX/p-NN.jpg  ภาพแต่ละหน้า (ใช้แสดงบนเว็บ) และ thumb.jpg = ภาพปก
+docs/docXX.pdf      เอกสารประกอบการสอนแต่ละบท
+docs/docXX/p-NN.jpg ภาพแต่ละหน้าของเอกสาร (กว้าง 1100px)
 ```
 
 ## เพิ่ม/แก้สไลด์บทใหม่
@@ -19,6 +21,14 @@ pdftoppm -jpeg -scale-to-x 560 -scale-to-y -1 -f 1 -l 1 -singlefile บทที
 cp บทที่11.pdf slides/ch11.pdf
 ```
 แล้วเพิ่มบรรทัดใน `SLIDES` ของ `assets/data.js` (ระบุจำนวนหน้า `pages`)
+
+## เพิ่ม/แก้เอกสารประกอบการสอน
+```bash
+pdftoppm -jpeg -jpegopt quality=80 -scale-to-x 1100 -scale-to-y -1 เอกสาร_บทที่_11.pdf docs/doc11/p
+pdftoppm -jpeg -jpegopt quality=80 -scale-to-x 440 -scale-to-y -1 -f 1 -l 1 -singlefile เอกสาร_บทที่_11.pdf docs/doc11/thumb
+cp เอกสาร_บทที่_11.pdf docs/doc11.pdf
+```
+แล้วเพิ่มบรรทัดใน `DOCS` ของ `assets/data.js`
 
 ## เผยแพร่ด้วย GitHub Pages
 Settings → Pages → Source: *Deploy from a branch* → Branch `main` / `(root)`
