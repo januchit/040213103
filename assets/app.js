@@ -401,7 +401,7 @@ Z = np.sin(X) * np.cos(Y)   <span class="c"># z = sin x · cos y</span>
 
     reader = { d, page };
     function setCurrent(p) {
-      if (p === reader.page) return;
+      if (p === reader.page || (reader.lock && Date.now() < reader.lock)) return;
       reader.page = p;
       if (document.activeElement !== input) input.value = p;
       document.getElementById("rBar").style.width = (p / d.pages * 100) + "%";
@@ -411,7 +411,8 @@ Z = np.sin(X) * np.cos(Y)   <span class="c"># z = sin x · cos y</span>
       p = Math.min(Math.max(1, p), d.pages);
       const el = document.getElementById("pg-" + p);
       const off = document.querySelector(".site-header").offsetHeight + document.querySelector(".rbar").offsetHeight + 12;
-      window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - off, behavior: smooth ? "smooth" : "auto" });
+      reader.lock = Date.now() + (smooth ? 900 : 300);
+      window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - off, behavior: smooth ? "smooth" : "instant" });
       input.value = p; reader.page = p;
       document.getElementById("rBar").style.width = (p / d.pages * 100) + "%";
       history.replaceState(null, "", `#docs/${id}/${p}`);
@@ -437,7 +438,7 @@ Z = np.sin(X) * np.cos(Y)   <span class="c"># z = sin x · cos y</span>
     document.getElementById("zOut").onclick = () => { if (zi > 0) { const p = reader.page; zi--; applyZoom(); go(p, false); } };
 
     document.getElementById("rBar").style.width = (page / d.pages * 100) + "%";
-    if (page > 1) requestAnimationFrame(() => go(page, false));
+    if (page > 1) { go(page, false); setTimeout(() => { if (reader && reader.d === d) go(page, false); }, 120); }
   }
 
   /* ---------------- router ---------------- */
@@ -467,14 +468,14 @@ Z = np.sin(X) * np.cos(Y)   <span class="c"># z = sin x · cos y</span>
     else if (tab === "plan") { renderPlan(); document.title = `แผนการสอน · ${C.code}`; }
     else if (tab === "docs") {
       const d = parts[1] && docById(parts[1]);
-      window.scrollTo(0, 0);
+      window.scrollTo({ top: 0, behavior: "instant" });
       if (d) { renderDocReader(parts[1], +parts[2] || 1); document.title = `เอกสารบทที่ ${parseInt(d.id, 10)} ${d.title} · ${C.code}`; }
       else { renderDocList(); document.title = `เอกสารประกอบการสอน · ${C.code}`; }
       return;
     }
     else if (parts[1]) { renderViewer(parts[1], +parts[2] || 1); const s = slideById(parts[1]); document.title = `${s ? "บทที่ " + parseInt(s.id, 10) + " " + s.title : "สไลด์"} · ${C.code}`; }
     else { renderSlideList(); document.title = `สไลด์ · ${C.code}`; }
-    window.scrollTo(0, 0);
+    window.scrollTo({ top: 0, behavior: "instant" });
   }
   window.addEventListener("hashchange", route);
   route();
