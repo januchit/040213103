@@ -22,3 +22,11 @@ cp บทที่11.pdf slides/ch11.pdf
 
 ## เผยแพร่ด้วย GitHub Pages
 Settings → Pages → Source: *Deploy from a branch* → Branch `main` / `(root)`
+
+## หน้าแรก (ฉาก 3 มิติ)
+โค้ดต้นฉบับอยู่ที่ `src/hero3d.js` (ใช้ Three.js) และรวมเป็นไฟล์เดียวที่ `assets/hero3d.js`
+ถ้าแก้ `src/hero3d.js` ให้ build ใหม่ด้วย:
+```bash
+npm i three esbuild
+npx esbuild src/hero3d.js --bundle --minify --format=iife --outfile=assets/hero3d.js
+```

@@ -13,6 +13,68 @@
     right: '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>'
   };
 
+  /* ---------------- หน้าแรก ---------------- */
+  function renderHome() {
+    const total = S.reduce((a, s) => a + s.pages, 0);
+    const weeks = C.weeks.filter((w) => w.w).length;
+    app.innerHTML = `
+      <section class="home-hero">
+        <div class="hero3d" id="hero3d" aria-hidden="true"></div>
+        <div class="hero-shade" aria-hidden="true"></div>
+        <div class="wrap hero-inner">
+          <div class="hero-copy">
+            <div class="hero-eyebrow"><span class="dot"></span>${C.code} · ภาคการศึกษา ${C.term}</div>
+            <h1 class="hero-title">คณิตศาสตร์<span class="x">×</span><br><span class="red">การเขียนโปรแกรม</span></h1>
+            <p class="hero-sub">เปลี่ยนสมการให้เป็นโค้ด เปลี่ยนโค้ดให้เป็นคำตอบ — เรียนรู้ Python ตั้งแต่พื้นฐานจนถึง NumPy เพื่อแก้ปัญหาทางคณิตศาสตร์</p>
+            <div class="hero-cta">
+              <a class="btn primary lg" href="#plan">ดูแผนการสอน</a>
+              <a class="btn ghost lg" href="#slides">เปิดสไลด์</a>
+            </div>
+          </div>
+          <div class="code-card" aria-label="ตัวอย่างโค้ด">
+            <div class="code-top"><i></i><i></i><i></i><span>surface.py</span></div>
+<pre><code><span class="k">import</span> numpy <span class="k">as</span> np
+
+x = np.linspace(-np.pi, np.pi, <span class="n">150</span>)
+X, Y = np.meshgrid(x, x)
+Z = np.sin(X) * np.cos(Y)   <span class="c"># z = sin x · cos y</span>
+<span class="k">print</span>(Z.max())            <span class="c"># 1.0</span></code></pre>
+          </div>
+        </div>
+        <div class="wrap hero-stats">
+          <div><b>${S.length}</b><span>บทเรียน</span></div>
+          <div><b>${total}</b><span>หน้าสไลด์</span></div>
+          <div><b>${weeks}</b><span>สัปดาห์</span></div>
+          <div><b>Python</b><span>บน Google Colab</span></div>
+        </div>
+      </section>
+
+      <section class="wrap home-cards">
+        <a class="hcard" href="#plan">
+          <span class="hnum">01</span>
+          <h3>แผนการสอน</h3>
+          <p>จุดมุ่งหมาย คำอธิบายรายวิชา หัวข้อ 15 สัปดาห์ การวัดผล และอาจารย์ผู้สอน</p>
+          <span class="go">เปิดดู →</span>
+        </a>
+        <a class="hcard" href="#slides">
+          <span class="hnum">02</span>
+          <h3>สไลด์ประกอบการเรียน</h3>
+          <p>อ่านสไลด์รายบทบนเว็บได้ทันที ทั้งบนคอมพิวเตอร์และมือถือ หรือดาวน์โหลดเป็น PDF</p>
+          <span class="go">เปิดดู →</span>
+        </a>
+        <div class="hcard soon">
+          <span class="hnum">03</span>
+          <h3>แบบฝึกหัดบน Colab</h3>
+          <p>ฝึกเขียนโปรแกรมจริงผ่าน Google Colab — กดเปิดแล้วเริ่มเขียนได้เลย ไม่ต้องติดตั้งโปรแกรม</p>
+          <span class="go">เร็ว ๆ นี้</span>
+        </div>
+      </section>`;
+
+    const el = document.getElementById("hero3d");
+    if (window.Hero3D) window.__heroUnmount = window.Hero3D.mount(el);
+    else window.__heroPending = el;
+  }
+
   /* ---------------- แผนการสอน ---------------- */
   function renderPlan() {
     const facts = `
@@ -243,8 +305,8 @@
   /* ---------------- router ---------------- */
   let lastRoute = "";
   function route() {
-    const parts = (location.hash.replace(/^#\/?/, "") || "plan").split("/");
-    const tab = parts[0] === "slides" ? "slides" : "plan";
+    const parts = (location.hash.replace(/^#\/?/, "") || "home").split("/");
+    const tab = ["slides", "plan"].includes(parts[0]) ? parts[0] : "home";
     document.querySelectorAll(".tab").forEach((t) => {
       const on = t.dataset.tab === tab;
       t.classList.toggle("active", on);
@@ -255,8 +317,13 @@
     if (tab === "slides" && parts[1] && key === lastRoute && viewer) { viewer.show(+parts[2] || 1, false); return; }
     lastRoute = key;
     viewer = null;
+    if (window.__heroUnmount) { window.__heroUnmount(); window.__heroUnmount = null; }
+    window.__heroPending = null;
+    app.className = tab === "home" ? "" : "wrap";
+    document.body.classList.toggle("is-home", tab === "home");
 
-    if (tab === "plan") { renderPlan(); document.title = `แผนการสอน · ${C.code}`; }
+    if (tab === "home") { renderHome(); document.title = `${C.code} ${C.nameTh}`; }
+    else if (tab === "plan") { renderPlan(); document.title = `แผนการสอน · ${C.code}`; }
     else if (parts[1]) { renderViewer(parts[1], +parts[2] || 1); const s = slideById(parts[1]); document.title = `${s ? "บทที่ " + parseInt(s.id, 10) + " " + s.title : "สไลด์"} · ${C.code}`; }
     else { renderSlideList(); document.title = `สไลด์ · ${C.code}`; }
     window.scrollTo(0, 0);
