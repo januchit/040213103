@@ -94,3 +94,18 @@ window.DOCS = [
   { id: "09", title: "ฟังก์ชัน", en: "Functions", pages: 15, weeks: "สัปดาห์ 10–11", slide: "09" },
   { id: "10", title: "การคำนวณเชิงตัวเลขด้วย NumPy", en: "Numerical Computing with NumPy", pages: 15, weeks: "สัปดาห์ 12–13", slide: "10" }
 ];
+
+// แบบฝึกหัด Google Colab: ไฟล์อยู่ที่ colab/ExerciseXX.ipynb ใน repo (เปิดผ่าน colab.research.google.com/github/...)
+window.COLAB_REPO = "januchit/040213103";
+window.EXERCISES = [
+  {"id": "01", "title": "คอมพิวเตอร์ ภาษา Python และ Google Colab", "en": "Introduction to Computers, Python and Google Colab", "weeks": "สัปดาห์ 1", "items": ["แนะนำตัว", "เครื่องคิดเลข", "สี่เหลี่ยมคางหมู"]},
+  {"id": "02", "title": "ตัวแปร ชนิดข้อมูล และการรับ-แสดงผลข้อมูล", "en": "Variables, Data Types, Input and Output", "weeks": "สัปดาห์ 2", "items": ["สี่เหลี่ยมผืนผ้า", "ค่าเฉลี่ย", "แปลงหน่วยเวลา"]},
+  {"id": "03", "title": "ไลบรารี math และ random", "en": "Libraries", "weeks": "สัปดาห์ 3", "items": ["พื้นที่และปริมาตร", "ห.ร.ม. และ ค.ร.น.", "สามเหลี่ยมมุมฉาก", "สุ่มโจทย์บวกเลข"]},
+  {"id": "04", "title": "โครงสร้างเงื่อนไข if / elif / else", "en": "Conditional Structure", "weeks": "สัปดาห์ 4–5", "items": ["บวก ลบ หรือศูนย์", "หารลงตัว", "ฟังก์ชันเป็นช่วง", "ชนิดของสามเหลี่ยม"]},
+  {"id": "05", "title": "การวนซ้ำด้วย for", "en": "Repetition Structure: For Loops", "weeks": "สัปดาห์ 6", "items": ["ผลรวมเลขคี่", "ตารางยกกำลัง", "ประมาณค่า e", "จำนวนสมบูรณ์"]},
+  {"id": "06", "title": "ลิสต์ (Lists)", "en": "Lists", "weeks": "สัปดาห์ 7", "items": ["คะแนนสูงสุด-ต่ำสุด", "รับแล้วเรียง", "นับคู่-คี่", "ลิสต์กำลังสอง"]},
+  {"id": "07", "title": "การวนซ้ำด้วย while", "en": "While Loops", "weeks": "สัปดาห์ 8", "items": ["นับถอยหลัง", "นับจำนวนหลัก", "จำนวนเฉพาะ", "รากที่สาม"]},
+  {"id": "08", "title": "ดิกชันนารีและเซต", "en": "Dictionaries and Sets", "weeks": "สัปดาห์ 9", "items": ["สมุดอายุ", "นับคำ", "ค่าไม่ซ้ำ", "การดำเนินการเซต"]},
+  {"id": "09", "title": "ฟังก์ชัน", "en": "Functions", "weeks": "สัปดาห์ 10–11", "items": ["เลขคู่", "วงกลม", "ค่ามากที่สุด", "xⁿ แบบเรียกซ้ำ"]},
+  {"id": "10", "title": "การคำนวณเชิงตัวเลขด้วย NumPy", "en": "Numerical Computing with NumPy", "weeks": "สัปดาห์ 12–13", "items": ["สถิติ 1–10", "เวกเตอร์", "เมทริกซ์ 3×3", "ระบบสมการ"]}
+];

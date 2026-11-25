@@ -11,6 +11,7 @@ assets/app.js       การทำงานของหน้าเว็บ
 slides/chXX.pdf     ไฟล์ PDF ของแต่ละบท
 slides/chXX/p-NN.jpg  ภาพแต่ละหน้า (ใช้แสดงบนเว็บ) และ thumb.jpg = ภาพปก
 docs/docXX.pdf      เอกสารประกอบการสอนแต่ละบท
+colab/ExerciseXX.ipynb  แบบฝึกหัด Colab แต่ละบท
 docs/docXX/p-NN.jpg ภาพแต่ละหน้าของเอกสาร (กว้าง 1100px)
 ```
 
@@ -29,6 +30,11 @@ pdftoppm -jpeg -jpegopt quality=80 -scale-to-x 440 -scale-to-y -1 -f 1 -l 1 -sin
 cp เอกสาร_บทที่_11.pdf docs/doc11.pdf
 ```
 แล้วเพิ่มบรรทัดใน `DOCS` ของ `assets/data.js`
+
+## แบบฝึกหัด Google Colab
+ไฟล์อยู่ที่ `colab/Exercise01.ipynb` … `colab/Exercise10.ipynb`
+ปุ่ม "เปิดใน Colab" บนเว็บลิงก์ไปที่ `https://colab.research.google.com/github/januchit/040213103/blob/main/colab/ExerciseXX.ipynb`
+แก้ไฟล์ .ipynb แล้ว push ขึ้น GitHub ลิงก์จะเปิดเวอร์ชันใหม่ทันที (เพิ่มบทใหม่ให้เพิ่มใน `EXERCISES` ของ `assets/data.js`)
 
 ## เผยแพร่ด้วย GitHub Pages
 Settings → Pages → Source: *Deploy from a branch* → Branch `main` / `(root)`

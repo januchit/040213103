@@ -1,5 +1,7 @@
 (function () {
-  const C = window.COURSE, S = window.SLIDES, D = window.DOCS || [];
+  const C = window.COURSE, S = window.SLIDES, D = window.DOCS || [], X = window.EXERCISES || [];
+  const exById = (id) => X.find((x) => x.id === id);
+  const colabUrl = (id) => `https://colab.research.google.com/github/${window.COLAB_REPO}/blob/main/colab/Exercise${id}.ipynb`;
   const docById = (id) => D.find((d) => d.id === id);
   const docSrc = (id, p) => `docs/doc${id}/p-${pad(p)}.jpg`;
   const app = document.getElementById("app");
@@ -10,6 +12,8 @@
   const icon = {
     doc: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M8 13h8M8 17h5"/></svg>',
     ext: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg>',
+    play: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13a1 1 0 0 0 1.5.86l10.5-6.5a1 1 0 0 0 0-1.72L9.5 4.64A1 1 0 0 0 8 5.5z"/></svg>',
+    code: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 7l-5 5 5 5M16 7l5 5-5 5"/></svg>',
     slides: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M12 16v4M8 20h8"/></svg>',
     dl: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg>',
     full: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>',
@@ -72,12 +76,12 @@ Z = np.sin(X) * np.cos(Y)   <span class="c"># z = sin x · cos y</span>
           <p>เนื้อหาละเอียดรายบท พร้อมตัวอย่างโค้ดและคำอธิบาย อ่านบนเว็บหรือดาวน์โหลด PDF</p>
           <span class="go">เปิดดู →</span>
         </a>
-        <div class="hcard soon">
+        <a class="hcard" href="#exercises">
           <span class="hnum">04</span>
           <h3>แบบฝึกหัดบน Colab</h3>
           <p>ฝึกเขียนโปรแกรมจริงผ่าน Google Colab — กดเปิดแล้วเริ่มเขียนได้เลย ไม่ต้องติดตั้งโปรแกรม</p>
-          <span class="go">เร็ว ๆ นี้</span>
-        </div>
+          <span class="go">เปิดดู →</span>
+        </a>
       </section>`;
 
     const el = document.getElementById("hero3d");
@@ -105,6 +109,9 @@ Z = np.sin(X) * np.cos(Y)   <span class="c"># z = sin x · cos y</span>
       }).join("") + w.ch.map((id) => {
         const d = docById(id);
         return d ? `<a class="chip" href="#docs/${id}" title="เอกสารประกอบการสอนบทที่ ${parseInt(id, 10)}">${icon.doc}เอกสาร ${parseInt(id, 10)}</a>` : "";
+      }).join("") + w.ch.map((id) => {
+        const x = exById(id);
+        return x ? `<a class="chip" href="#exercises/${id}" title="แบบฝึกหัดบทที่ ${parseInt(id, 10)}">${icon.code}แบบฝึกหัด ${parseInt(id, 10)}</a>` : "";
       }).join("");
       return `
         <div class="wk">
@@ -164,7 +171,7 @@ Z = np.sin(X) * np.cos(Y)   <span class="c"># z = sin x · cos y</span>
         </section>
 
         <section class="section" id="schedule">
-          ${head(3, "หัวข้อการสอนรายสัปดาห์", "กดที่ป้ายเพื่อเปิดสไลด์หรือเอกสารของบทนั้น")}
+          ${head(3, "หัวข้อการสอนรายสัปดาห์", "กดที่ป้ายเพื่อเปิดสไลด์ เอกสาร หรือแบบฝึกหัดของบทนั้น")}
           <div class="schedule">${weeks}</div>
         </section>
 
@@ -441,11 +448,68 @@ Z = np.sin(X) * np.cos(Y)   <span class="c"># z = sin x · cos y</span>
     if (page > 1) { go(page, false); setTimeout(() => { if (reader && reader.d === d) go(page, false); }, 120); }
   }
 
+
+  /* ---------------- แบบฝึกหัด Colab ---------------- */
+  function renderExercises(focus) {
+    const nProb = X.reduce((a, x) => a + x.items.length, 0);
+    const steps = [
+      ["เปิดแบบฝึกหัด", "กดปุ่ม <b>เปิดใน Colab</b> ของบทที่ต้องการ (ต้องล็อกอินบัญชี Google)"],
+      ["บันทึกสำเนา", "เมนู <b>File → Save a copy in Drive</b> เพื่อให้แก้ไขและบันทึกงานของตัวเองได้"],
+      ["ตั้งชื่อไฟล์", "เปลี่ยนชื่อเป็น <code>ExerciseXX_รหัสนักศึกษา.ipynb</code> แล้วกรอกชื่อ รหัส และตอนเรียนในช่องแรก"],
+      ["แชร์และส่งงาน", "<b>Share → Anyone with the link</b> (Viewer) แล้วคัดลอกลิงก์ส่งในระบบส่งงาน"]
+    ].map(([t, d], i) => `<li><span class="sn">${i + 1}</span><div><b class="st">${t}</b><span>${d}</span></div></li>`).join("");
+
+    const rows = X.map((x) => {
+      const s = slideById(x.id), d = docById(x.id);
+      return `
+      <article class="exrow" id="ex-${x.id}">
+        <div class="exno"><span>บทที่</span><b>${parseInt(x.id, 10)}</b></div>
+        <div class="exbody">
+          <div class="exmeta">${x.weeks} · ${x.items.length} ข้อ</div>
+          <h3>${x.title}</h3>
+          <div class="exen">${x.en}</div>
+          <ol class="exitems">${x.items.map((t) => `<li>${t}</li>`).join("")}</ol>
+          <div class="exlinks">
+            ${s ? `<a href="#slides/${x.id}">${icon.slides}สไลด์บทนี้</a>` : ""}
+            ${d ? `<a href="#docs/${x.id}">${icon.doc}เอกสารบทนี้</a>` : ""}
+          </div>
+        </div>
+        <div class="exact">
+          <a class="btn primary" href="${colabUrl(x.id)}" target="_blank" rel="noopener">${icon.play}เปิดใน Colab</a>
+          <a class="btn" href="colab/Exercise${x.id}.ipynb" download>${icon.dl}ดาวน์โหลด .ipynb</a>
+        </div>
+      </article>`;
+    }).join("");
+
+    app.innerHTML = `
+      <div class="page">
+        <section class="hero">
+          <div class="eyebrow"><b>แบบฝึกหัด Google Colab</b> · ${C.code} · ${C.term}</div>
+          <h1>แบบฝึกหัดรายบท</h1>
+          <p class="en">${X.length} บท · ${nProb} ข้อ — โจทย์จากสไลด์ประกอบการสอน ลงมือเขียน Python บน Google Colab ได้ทันที ไม่ต้องติดตั้งโปรแกรม</p>
+          ${seg()}
+        </section>
+        <section class="howto">
+          <h2>วิธีทำและส่งแบบฝึกหัด</h2>
+          <ol class="steps">${steps}</ol>
+        </section>
+        <div class="exlist">${rows}</div>
+      </div>`;
+
+    if (focus) {
+      const el = document.getElementById("ex-" + focus);
+      if (el) {
+        el.classList.add("focus");
+        requestAnimationFrame(() => window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 90, behavior: "instant" }));
+      }
+    }
+  }
+
   /* ---------------- router ---------------- */
   let lastRoute = "";
   function route() {
     const parts = (location.hash.replace(/^#\/?/, "") || "home").split("/");
-    const tab = ["slides", "plan", "docs"].includes(parts[0]) ? parts[0] : "home";
+    const tab = ["slides", "plan", "docs", "exercises"].includes(parts[0]) ? parts[0] : "home";
     document.querySelectorAll(".tab").forEach((t) => {
       const on = t.dataset.tab === tab;
       t.classList.toggle("active", on);
@@ -466,6 +530,12 @@ Z = np.sin(X) * np.cos(Y)   <span class="c"># z = sin x · cos y</span>
 
     if (tab === "home") { renderHome(); document.title = `${C.code} ${C.nameTh}`; }
     else if (tab === "plan") { renderPlan(); document.title = `แผนการสอน · ${C.code}`; }
+    else if (tab === "exercises") {
+      window.scrollTo({ top: 0, behavior: "instant" });
+      renderExercises(parts[1]);
+      document.title = `แบบฝึกหัด · ${C.code}`;
+      return;
+    }
     else if (tab === "docs") {
       const d = parts[1] && docById(parts[1]);
       window.scrollTo({ top: 0, behavior: "instant" });
